@@ -24,14 +24,13 @@ class FunctionalCachingController < CachingController
 end
 
 class FunctionalFragmentCachingTest < ActionController::TestCase
+  tests FunctionalCachingController
+
   def setup
     super
     @store = ActiveSupport::Cache::MemoryStore.new
-    @controller = FunctionalCachingController.new
     @controller.perform_caching = true
     @controller.cache_store = @store
-    @request = ActionController::TestRequest.new
-    @response = ActionController::TestResponse.new
   end
 
   def test_fragment_caching_in_rjs_partials
