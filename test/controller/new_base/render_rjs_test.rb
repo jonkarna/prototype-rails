@@ -44,27 +44,27 @@ module RenderRjs
     end
 
     test "rendering a partial in an RJS template should pick the JS template over the HTML one" do
-      get :index, "format" => "js"
+      get :index, params: { 'format' => 'js' }
       assert_response("$(\"customer\").update(\"JS Partial\");")
     end
 
     test "rendering a partial in an RJS template should pick the HTML one if no JS is available" do
-      get :index_no_js, "format" => "js"
+      get :index_no_js, params: { 'format' => 'js' }
       assert_response("HTML Partial")
     end
 
     test "rendering a partial in an RJS template should pick the HTML one if no JS is available on respond_to" do
-      get :index_respond_to, "format" => "js"
+      get :index_respond_to, params: { 'format' => 'js' }
       assert_response("HTML Partial")
     end
 
     test "replacing an element with a partial in an RJS template should pick the HTML template over the JS one" do
-      get :index_html, "format" => "js"
+      get :index_html, params: { 'format' => 'js' }
       assert_response("$(\"customer\").update(\"HTML Partial\");")
     end
 
     test "replacing an element with a partial in an RJS template with a locale should pick the localed HTML template" do
-      get :index_locale, "format" => "js"
+      get :index_locale, params: { 'format' => 'js' }
       assert_response("$(\"customer\").update(\"Danish HTML Partial\");")
     end
   end

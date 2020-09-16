@@ -11,7 +11,7 @@ module ContentType
 
   class ImpliedContentTypeTest < Rack::TestCase
     test "sets Content-Type as text/javascript when rendering *.js" do
-      get "/content_type/implied/i_am_js_rjs", "format" => "js"
+      get "/content_type/implied/i_am_js_rjs", params: { 'format' => 'js' }
 
       assert_header "Content-Type", "text/javascript; charset=utf-8"
     end
