@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'action_view/helpers/javascript_helper'
 require 'active_support/json'
 

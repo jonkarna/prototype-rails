@@ -1,9 +1,11 @@
+# encoding: utf-8
+
 require 'active_support/core_ext/module/aliasing'
 require 'action_dispatch/testing/assertions'
 require 'rails/dom/testing/assertions/selector_assertions'
 
 #--
-# Copyright (c) 2006 Assaf Arkin (http://labnotes.org)
+# Copyright (c) 2006, 2020 Assaf Arkin (http://labnotes.org)
 # Under MIT and/or CC By license.
 #++
 
