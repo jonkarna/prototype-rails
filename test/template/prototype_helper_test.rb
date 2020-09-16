@@ -142,23 +142,23 @@ class JavaScriptGeneratorTest < PrototypeHelperBaseTest
   def _evaluate_assigns_and_ivars() end
 
   def test_insert_html_with_string
-    assert_equal 'Element.insert("element", { top: "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E" });',
+    assert_equal 'Element.insert("element", { top: "\\u003cp\\u003eThis is a test\\u003c/p\\u003e" });',
       @generator.insert_html(:top, 'element', '<p>This is a test</p>')
-    assert_equal 'Element.insert("element", { bottom: "\\u003Cp\u003EThis is a test\\u003C/p\u003E" });',
+    assert_equal 'Element.insert("element", { bottom: "\\u003cp\u003eThis is a test\\u003c/p\u003e" });',
       @generator.insert_html(:bottom, 'element', '<p>This is a test</p>')
-    assert_equal 'Element.insert("element", { before: "\\u003Cp\u003EThis is a test\\u003C/p\u003E" });',
+    assert_equal 'Element.insert("element", { before: "\\u003cp\u003eThis is a test\\u003c/p\u003e" });',
       @generator.insert_html(:before, 'element', '<p>This is a test</p>')
-    assert_equal 'Element.insert("element", { after: "\\u003Cp\u003EThis is a test\\u003C/p\u003E" });',
+    assert_equal 'Element.insert("element", { after: "\\u003cp\u003eThis is a test\\u003c/p\u003e" });',
       @generator.insert_html(:after, 'element', '<p>This is a test</p>')
   end
 
   def test_replace_html_with_string
-    assert_equal 'Element.update("element", "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E");',
+    assert_equal 'Element.update("element", "\\u003cp\\u003eThis is a test\\u003c/p\\u003e");',
       @generator.replace_html('element', '<p>This is a test</p>')
   end
 
   def test_replace_element_with_string
-    assert_equal 'Element.replace("element", "\\u003Cdiv id=\"element\"\\u003E\\u003Cp\\u003EThis is a test\\u003C/p\\u003E\\u003C/div\\u003E");',
+    assert_equal 'Element.replace("element", "\\u003cdiv id=\"element\"\\u003e\\u003cp\\u003eThis is a test\\u003c/p\\u003e\\u003c/div\\u003e");',
       @generator.replace('element', '<div id="element"><p>This is a test</p></div>')
   end
 
@@ -221,10 +221,10 @@ class JavaScriptGeneratorTest < PrototypeHelperBaseTest
     @generator.replace_html('baz', '<p>This is a test</p>')
 
     assert_equal <<-EOS.chomp, @generator.to_s
-Element.insert("element", { top: "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E" });
-Element.insert("element", { bottom: "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E" });
+Element.insert("element", { top: "\\u003cp\\u003eThis is a test\\u003c/p\\u003e" });
+Element.insert("element", { bottom: "\\u003cp\\u003eThis is a test\\u003c/p\\u003e" });
 ["foo","bar"].each(Element.remove);
-Element.update("baz", "\\u003Cp\\u003EThis is a test\\u003C/p\\u003E");
+Element.update("baz", "\\u003cp\\u003eThis is a test\\u003c/p\\u003e");
     EOS
   end
 
@@ -321,7 +321,7 @@ $$("p.welcome b").each(function(value, index) {
 value.removeClassName("selected");
 });
 $$("p.welcome b").each(function(value, index) {
-new Effect.Highlight(value,{});
+new Effect.Highlight("value",{});
 });
       EOS
   end
@@ -369,7 +369,7 @@ return (value.className == "welcome");
       @generator << '(value.className == "welcome")'
     end
 
-    assert_equal <<-EOS.strip, @generator.to_s
+    foo = <<-EOS.strip
 var a = $$("p").inject([], function(memo, value, index) {
 return (value.className == "welcome");
 });
@@ -378,6 +378,7 @@ alert(memo);
 return (value.className == "welcome");
 });
     EOS
+    assert_equal foo, @generator.to_s
   end
 
   def test_collection_proxy_with_pluck
@@ -444,7 +445,7 @@ return value.reverse();
 
   def test_literal
     literal = @generator.literal("function() {}")
-    assert_equal "function() {}", ActiveSupport::JSON.encode(literal)
+    assert_equal "\"function() {}\"", ActiveSupport::JSON.encode(literal)
     assert_equal "", @generator.to_s
   end
 

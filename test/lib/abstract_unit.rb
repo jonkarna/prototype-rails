@@ -1,5 +1,6 @@
 require 'rubygems'
-require 'bundler/setup'
+# require 'bundler/setup'
+Bundler.require(:default, 'test') if defined?(Bundler)
 require 'minitest/autorun'
 
 require 'active_support'
@@ -7,6 +8,9 @@ require 'active_support/test_case'
 require 'action_controller'
 require 'action_view'
 require 'action_view/testing/resolvers'
+require 'rails-controller-testing'
+
+Rails::Controller::Testing.install
 
 module Rails
   def self.env
@@ -100,12 +104,12 @@ class ActionDispatch::IntegrationTest < ActiveSupport::TestCase
 
   def self.build_app(routes = nil)
     RoutedRackApp.new(routes || ActionDispatch::Routing::RouteSet.new) do |middleware|
-      middleware.use "ActionDispatch::ShowExceptions", ActionDispatch::PublicExceptions.new("#{FIXTURE_LOAD_PATH}/public")
-      middleware.use "ActionDispatch::Callbacks"
-      middleware.use "ActionDispatch::ParamsParser"
-      middleware.use "ActionDispatch::Cookies"
-      middleware.use "ActionDispatch::Flash"
-      middleware.use "Rack::Head"
+      middleware.use ActionDispatch::ShowExceptions, ActionDispatch::PublicExceptions.new("#{FIXTURE_LOAD_PATH}/public")
+      middleware.use ActionDispatch::Callbacks
+      # middleware.use ActionDispatch::ParamsParser
+      middleware.use ActionDispatch::Cookies
+      middleware.use ActionDispatch::Flash
+      middleware.use Rack::Head
       yield(middleware) if block_given?
     end
   end

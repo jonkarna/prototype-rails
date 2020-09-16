@@ -1,9 +1,10 @@
 require 'abstract_unit'
 require 'pathname'
 require 'securerandom'
+require 'responders'
 
 ActionController.add_renderer :simon do |says, options|
-  self.content_type  = Mime::TEXT
+  self.content_type  = ::Mime.respond_to?(:[]) ? ::Mime[:text] : ::Mime::TEXT
   self.response_body = "Simon says: #{says}"
 end
 
@@ -162,13 +163,10 @@ class RenderOtherTest < ActionController::TestCase
   end
 
   def test_enum_rjs_test
-    pre = %[$$(".product").each(function(value, index) {
-      new Effect.Highlight(element,{});
-      new Effect.Highlight(value,{});
-      Sortable.create(value, {onUpdate:function(){new Ajax.Request('/render_other_test/test/order', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize(value) + '&authenticity_token=' + encodeURIComponent('].gsub(/^\s+/, '')
-    post = %[')})}});\nnew Draggable(value, {});\n});]
+    pre = "$$(\".product\").each(function(value, index) {\nnew Effect.Highlight(element,{});\nnew Effect.Highlight(\"value\",{});\nSortable.create(\"value\", {onUpdate:function(){new Ajax.Request('/test/order', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize(\"value\") + '&authenticity_token=' + encodeURIComponent('"
+    post = "')})}});\nnew Draggable(\"value\", {});\n});"
 
-    get :enum_rjs_test
+    get :enum_rjs_test, format: :js, xhr: true
     assert_match pre, @response.body
     assert_match post, @response.body
   end
@@ -176,14 +174,14 @@ class RenderOtherTest < ActionController::TestCase
   def test_explicitly_rendering_an_html_template_with_implicit_html_template_renders_should_be_possible_from_an_rjs_template
     [:js, "js"].each do |format|
       assert_nothing_raised do
-        get :render_explicit_html_template, :format => format
+        get :render_explicit_html_template, format: format, xhr: true
         assert_equal %(document.write("Hello world\\n");), @response.body
       end
     end
   end
 
   def test_render_custom_code_rjs
-    get :render_custom_code_rjs
+    get :render_custom_code_rjs, format: :js, xhr: true
     assert_response 404
     assert_equal %(Element.replace("foo", "partial html");), @response.body
   end
@@ -191,36 +189,36 @@ class RenderOtherTest < ActionController::TestCase
   def test_render_in_an_rjs_template_should_pick_html_templates_when_available
     [:js, "js"].each do |format|
       assert_nothing_raised do
-        get :render_implicit_html_template, :format => format
+        get :render_implicit_html_template, format: format, xhr: true
         assert_equal %(document.write("Hello world\\n");), @response.body
       end
     end
   end
 
   def test_render_rjs_template_explicitly
-    get :render_js_with_explicit_template
+    get :render_js_with_explicit_template, format: :js, xhr: true
     assert_equal %!Element.remove("person");\nnew Effect.Highlight(\"project-4\",{});!, @response.body
   end
 
   def test_rendering_rjs_action_explicitly
-    get :render_js_with_explicit_action_template
+    get :render_js_with_explicit_action_template, format: :js, xhr: true
     assert_equal %!Element.remove("person");\nnew Effect.Highlight(\"project-4\",{});!, @response.body
   end
 
   def test_render_rjs_with_default
-    get :delete_with_js
+    get :delete_with_js, format: :js, xhr: true
     assert_equal %!Element.remove("person");\nnew Effect.Highlight(\"project-4\",{});!, @response.body
   end
 
   def test_update_page
-    get :update_page
+    get :update_page, format: :js, xhr: true
     assert_template nil
     assert_equal 'text/javascript; charset=utf-8', @response.headers['Content-Type']
     assert_equal 2, @response.body.split($/).length
   end
 
   def test_update_page_with_instance_variables
-    get :update_page_with_instance_variables
+    get :update_page_with_instance_variables, format: :js, xhr: true
     assert_template nil
     assert_equal 'text/javascript; charset=utf-8', @response.headers["Content-Type"]
     assert_match(/balance/, @response.body)
@@ -228,24 +226,24 @@ class RenderOtherTest < ActionController::TestCase
   end
 
   def test_update_page_with_view_method
-    get :update_page_with_view_method
+    get :update_page_with_view_method, format: :js, xhr: true
     assert_template nil
     assert_equal 'text/javascript; charset=utf-8', @response.headers["Content-Type"]
     assert_match(/2 people/, @response.body)
   end
 
   def test_should_render_html_formatted_partial_with_rjs
-    xhr :get, :partial_as_rjs
+    get :partial_as_rjs, format: :js, xhr: true
     assert_equal %(Element.replace("foo", "partial html");), @response.body
   end
 
   def test_should_render_html_formatted_partial_with_rjs_and_js_format
-    xhr :get, :respond_to_partial_as_rjs
+    get :respond_to_partial_as_rjs, format: :js, xhr: true
     assert_equal %(Element.replace("foo", "partial html");), @response.body
   end
 
   def test_should_render_with_alternate_default_render
-    xhr :get, :render_alternate_default
+    get :render_alternate_default, format: :js, xhr: true
     assert_equal %(Element.replace("foo", "partial html");), @response.body
   end
 

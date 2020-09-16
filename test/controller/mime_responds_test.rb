@@ -1,6 +1,7 @@
 require 'abstract_unit'
 require 'controller/fake_models'
 require 'active_support/core_ext/hash/conversions'
+require 'responders'
 
 class RespondToController < ActionController::Base
   layout :set_layout
@@ -178,7 +179,7 @@ class RespondToControllerTest < ActionController::TestCase
   end
 
   def test_xhr
-    xhr :get, :using_defaults
+    get :using_defaults, xhr: true
     assert_equal '$("body").visualEffect("highlight");', @response.body
   end
 end
@@ -196,7 +197,7 @@ protected
   end
 
   def _render_js(js, options)
-    self.content_type ||= Mime::JS
+    self.content_type ||= ::Mime.respond_to?(:[]) ? ::Mime[:js] : ::Mime::JS
     self.response_body = js.respond_to?(:to_js) ? js.to_js : js
   end
 end

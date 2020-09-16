@@ -145,7 +145,8 @@ module ActionView
         function = "if (#{options[:condition]}) { #{function}; }" if options[:condition]
         function = "if (confirm('#{escape_javascript(options[:confirm])}')) { #{function}; }" if options[:confirm]
 
-        return function.html_safe
+        # return function.html_safe
+        return function
       end
 
       # All the methods were moved to GeneratorMethods so that
@@ -552,7 +553,7 @@ module ActionView
             end
 
             def record(line)
-              line = "#{line.to_s.chomp.gsub(/\;\z/, '')};"
+              line = "#{line.to_s.chomp.gsub(/\;\z/, '')};".html_safe
               self << line
               line
             end
@@ -671,7 +672,7 @@ module ActionView
     class JavaScriptProxy < ActiveSupport::ProxyObject #:nodoc:
       def initialize(generator, root = nil)
         @generator = generator
-        @generator << root if root
+        @generator << root.html_safe if root
       end
 
       def is_a?(klass)
@@ -709,7 +710,7 @@ module ActionView
     class JavaScriptElementProxy < JavaScriptProxy #:nodoc:
       def initialize(generator, id)
         @id = id
-        super(generator, "$(#{::ActiveSupport::JSON.encode(id)})")
+        super(generator, "$(#{::ActiveSupport::JSON.encode(id)})".html_safe)
       end
 
       # Allows access of element attributes through +attribute+. Examples:
